@@ -1,0 +1,4 @@
+target point command
+collect data command
+set idle command
+set safe mode command
