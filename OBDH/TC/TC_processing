@@ -1,0 +1,92 @@
+import os
+import time
+
+def read_uplink(filename="uplink.txt", encoding="utf-8"):
+    """
+    Read and return the contents of uplink.txt located next to this module
+    by default. Returns the file contents as a stripped string.
+    """
+    base = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(base, filename)
+    try:
+        with open(path, "r", encoding=encoding) as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Uplink file not found at {path}")
+    
+def TC_reply(telecommand: str) -> str:
+    """
+    Takes telecommand from ground, checks the formatting, and
+    rejects invalidly formatted telecommands or replies that 
+    the telecommand has been accepted.
+
+    Args:
+        Telecommand.
+
+    Returns:
+        reply with acceptance or rejection of telecommand.
+    """
+    return reply
+
+#def sequence_ascribe(telecommand: str) -> str:
+    """
+    Takes telecommand from ground and adds a sequence number to it.
+
+    Args:
+        telecommand
+
+    Returns:
+        the same telecommand with a sequence number on it.
+    """
+    return telecommand + sequence_number
+
+def time_tag(telecommand: str) -> str:
+    """
+    Takes telecommand from ground and time tags it.
+
+    Args:
+        telecommand
+
+    Returns:
+        the same telecommand prefixed with a timestamp.
+    """
+    return time + telecommand
+
+def sequence_verify(previous_telecommand: str, telecommand: str) -> str:
+    """
+    Checks if the telecommands are sequenced properly.
+
+    Args:
+        telecommand and previous telecommand.
+
+    Returns:
+        verification of the sequence count.
+    """
+    return verification
+
+
+
+while True:
+    time.sleep(1)
+    telecommand=read_uplink()
+
+    TC_reply(telecommand)
+    sequence_verify(previous_telecommand, telecommand)
+    #sequence_ascribe(telecommand)
+    time_tag(telecommand)
+    previous_telecommand=telecommand
+
+
+
+
+
+"""
+Takes telecommand from ground and fully realizes the command
+by using all the telecommand functions on it.
+
+Args:
+    telecommand
+
+Returns:
+    routes the TC to payload or executes it on the platform.
+"""

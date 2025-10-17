@@ -1,0 +1,11 @@
+def TM_sequence_verify(telemetry: str, previous_telemetry: str) -> str:
+    """
+    Takes telemetry checks the sequence number.
+
+    Args:
+        telemetry
+
+    Returns:
+        checks the sequence.
+    """
+    return sequence_verification

@@ -1,0 +1,11 @@
+def PF_TM_generation() -> str:
+    """
+    generates platform telemetry.
+
+    Args:
+        
+
+    Returns:
+        generated platform telemetry.
+    """
+    return platform_telemetry

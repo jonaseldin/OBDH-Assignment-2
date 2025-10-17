@@ -1,0 +1,11 @@
+def TM_time_tag(telemetry: str) -> str:
+    """
+    Takes telemetry and time tags it.
+
+    Args:
+        telemetry
+
+    Returns:
+        the same telemetry prefixed with a timestamp.
+    """
+    return time + telemetry

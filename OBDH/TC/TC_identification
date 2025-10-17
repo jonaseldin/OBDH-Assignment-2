@@ -1,0 +1,11 @@
+def TC_identification(telecommand: str) -> str:
+    """
+    Identifies a telecommand as either meant for the platform or for the payload.
+
+    Args:
+        telecommand
+
+    Returns:
+        routes the telecommand to platform or to payload.
+    """
+    return telecommand + identification_tag

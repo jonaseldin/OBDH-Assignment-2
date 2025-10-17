@@ -1,0 +1,11 @@
+def TM_sequence_ascribe(telemetry: str) -> str:
+    """
+    Takes telemetry  and adds a sequence number to it.
+
+    Args:
+        telemetry
+
+    Returns:
+        the same telemetry with a sequence number.
+    """
+    return sequence_number + telemetry

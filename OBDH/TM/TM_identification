@@ -1,0 +1,13 @@
+def TM_identification(telemetry: str) -> str:
+    """
+    Takes telemetry and identifies if it originates from
+    platform or payload and whether it is housekeeping or
+    event telemetry.
+
+    Args:
+        telemetry
+
+    Returns:
+        identification of the telemetry.
+    """
+    return telemetry_identification

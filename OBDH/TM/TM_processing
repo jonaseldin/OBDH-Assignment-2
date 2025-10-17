@@ -1,0 +1,11 @@
+
+"""
+Looks for telemetry and processes 
+it before sending it to the ground.
+
+Args:
+    telemetry
+
+Returns:
+    sends the telemetry to the ground.
+"""

@@ -1,0 +1,12 @@
+def mode_switch(telecommand: str) -> str:
+    """
+    Takes telecommand routed for platform (mode switch TC) and
+    performs the mode switch for the payload.
+
+    Args:
+        mode switch telecommand
+
+    Returns:
+        switches payload mode to safe mode or target pointing mode.
+    """
+    return mode_switch_payload

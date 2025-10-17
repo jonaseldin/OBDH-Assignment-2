@@ -1,0 +1,11 @@
+def time_tag(telecommand: str) -> str:
+    """
+    Takes telecommand from ground and time tags it.
+
+    Args:
+        telecommand
+
+    Returns:
+        the same telecommand prefixed with a timestamp.
+    """
+    return time + telecommand
