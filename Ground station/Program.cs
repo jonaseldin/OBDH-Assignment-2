@@ -2,10 +2,12 @@
 
 using System;
 using System.IO;
+using System.Threading;
 
 
 class Program
 {
+
 
     static void DisplayHelp()
     {
@@ -23,6 +25,11 @@ class Program
     }
 
 
+    static void ClearSignalFile(string signalFilePath)
+    {
+        File.WriteAllText(signalFilePath, "");
+    }
+
     static void DisplayPfHk()
     {
 
@@ -33,25 +40,30 @@ class Program
 
     }
 
-    static void TargetPoint()
+    static void TargetPoint(string signalFilePath, string MIBFilePath, string downlinkPath)
     {
-        string[] lines = File.ReadAllLines("MIB.txt");
-        File.WriteAllText("Signal.txt", lines[0]);
-    }
+        string[] lines = File.ReadAllLines(MIBFilePath);
+        using FileStream fs = new FileStream(signalFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
+        using StreamWriter sw = new StreamWriter(fs);
 
-    static void CollectData()
-    {
-
-    }
-
-    static void Idle()
-    {
+        sw.WriteLine(lines[0]);
+        
 
     }
 
-    static void SafeMode()
+    static void CollectData(string signalFilePath, string MIBFilePath, string downlinkPath)
     {
+      
+    }
 
+    static void Idle(string signalFilePath, string MIBFilePath, string downlinkPath)
+    {
+      
+    }
+
+    static void SafeMode(string signalFilePath, string MIBFilePath, string downlinkPath)
+    {
+    
     }
 
     static void DisplayEventLog()
@@ -71,7 +83,13 @@ class Program
 
     static void Main()
     {
+        string uplinkFilePath = "Uplink.txt";
+        string MIBFilePath = "MIB.txt";
+        string downlinkPath = "C:\\Users\\wolinn-2\\source\\repos\\test\\test\\bin\\Debug\\net8.0\\Downlink.txt";
+        string LogPath = "Log.txt";
 
+        File.WriteAllText(LogPath, ""); //startup clear the file path, just for assignment
+        ClearSignalFile(uplinkFilePath); //startup clear the file path, just for assignment
 
         bool running = true;
         while (running)
@@ -79,6 +97,9 @@ class Program
             Console.WriteLine("type 'list' for a list of commands");
             Console.Write("Input command: ");
             string command = Console.ReadLine();
+
+
+            string lastTelemetry = File.ReadLines(LogPath).Last();
 
             switch (command)
             {
@@ -95,16 +116,16 @@ class Program
                     DisplayPlHk();
                     break;
                 case "target_point":
-                    TargetPoint();
+                    TargetPoint(uplinkFilePath, MIBFilePath, downlinkPath);
                     break;
                 case "collect_data":
-                    CollectData();
+                    CollectData(uplinkFilePath, MIBFilePath, downlinkPath);
                     break;
                 case "idle":
-                    Idle();
+                    Idle(uplinkFilePath, MIBFilePath, downlinkPath);
                     break;
                 case "safe_mode":
-                    SafeMode();
+                    SafeMode(uplinkFilePath, MIBFilePath, downlinkPath);
                     break;
                 case "display_event_log":
                     DisplayEventLog();
