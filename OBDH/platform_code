@@ -1,0 +1,234 @@
+import os
+import time
+import re
+#-------------------------------------------------
+#Telecommand functions
+#-------------------------------------------------
+def read_uplink(filename="uplink.txt", encoding="utf-8"):
+    file=open(filename, "r", encoding=encoding)  
+    uplink=file.read()
+    file.close()
+    print("Uplink read:", uplink)
+    return uplink
+def count_lines(lines: str) -> int:
+    """
+    Return the number of lines in the given text.
+    """
+    if not lines:
+        return 0
+    return len(lines.splitlines())
+def TC_reply(telecommand: str) -> bool:
+    """
+    Takes telecommand from ground, checks the formatting, and
+    rejects invalidly formatted telecommands or replies that 
+    the telecommand has been accepted.
+
+    Args:
+        Telecommand line.
+
+    Returns:
+        string with acceptance or rejection of telecommand.
+    """
+    telecommand_word_array=telecommand.split()
+    if len(telecommand_word_array) == 5: #checks if TC has 5 words
+        if re.match(r"^\d{2}:\d{2}:\d{2}$",telecommand[3]) or telecommand[3]=="instant": #checks if time request format is valid
+            downlink=open("downlink.txt", "a", encoding="utf-8")
+            downlink.write("4 Tc accepted ")
+            downlink.close()
+            return True
+        else:
+            downlink=open("downlink.txt", "a", encoding="utf-8")
+            downlink.write("Tc rejected: invalid time request format ")
+            downlink.close()
+            return False
+    else:
+        downlink=open("downlink.txt", "a", encoding="utf-8")
+        downlink.write("Tc rejected: invalid word count ")
+        downlink.close()
+        return False
+def time_tag(telecommand: str):
+    """
+    Takes telecommand from ground and time tags it.
+
+    Args:
+        telecommand
+
+    Returns:
+        the same telecommand prefixed with a timestamp.
+    """
+    downlink=open("downlink.txt", "a", encoding="utf-8")
+    downlink.write(time+" ")
+    downlink.close()
+def sequence_verify(telecommand: str):
+    """
+    Checks if the telecommands are sequenced properly.
+
+    Args:
+        telecommand and previous telecommand.
+
+    Returns:
+        verification of the sequence count.
+    """
+    if int(telecommand.split()[0]) == int(previous_telecommand_line.split()[0]) + 1 or int(telecommand.split()[0]) == 1:
+        open("downlink.txt","a", encoding="utf-8").write("sequence verified ").close()
+    else:
+        downlink=open("downlink.txt", "a", encoding="utf-8")
+        downlink.write("sequence error " )
+        downlink.close()
+def TC_identification(telecommand: str) -> str:
+    """
+    Identifies a telecommand as either meant for the platform or for the payload.
+
+    Args:
+        telecommand
+
+    Returns:
+        routes the telecommand to platform or to payload.
+    """
+    if telecommand.split()[2]=="pf": #identifies platform telecommand
+        downlink=open("downlink.txt", "a", encoding="utf-8")
+        downlink.write("routed for platform " )
+        downlink.close()
+    elif telecommand.split()[2]=="pl": #identifies payload telecommand
+        downlink=open("downlink.txt", "a", encoding="utf-8")
+        downlink.write("routed for payload " )
+        downlink.close()
+    else:
+        downlink=open("downlink.txt", "a", encoding="utf-8")
+        downlink.write("routed for unknown destination " )
+        downlink.close()
+def mode_switch(telecommand: str):
+    """
+    Takes telecommand routed for platform (mode switch TC) and
+    performs the mode switch for the payload.
+
+    Args:
+        mode switch telecommand
+
+    Returns:
+        switches payload mode to safe mode or target pointing mode.
+    """
+    if telecommand.split()[1]=="set_safe": #switches payload to safe mode
+        PF_to_PL=open("PF_to_PL.txt", "a", encoding="utf-8")
+        PF_to_PL.write("payload off " )
+        PF_to_PL.close()
+        downlink=open("downlink.txt", "a", encoding="utf-8")
+        downlink.write("sun pointing mode enabled " )
+        downlink.close()
+    elif telecommand.split()[1]=="target_point ": #switches payload to target pointing mode
+        PF_to_PL=open("PF_to_PL.txt", "a", encoding="utf-8")
+        PF_to_PL.write("payload idle " )
+        PF_to_PL.close()
+        downlink=open("downlink.txt", "a", encoding="utf-8")
+        downlink.write("target pointing mode enabled " )
+        downlink.close()
+    elif telecommand.split()[1]=="set_payload_idle": #switches payload to idle mode
+        PF_to_PL=open("PF_to_PL.txt", "a", encoding="utf-8")
+        PF_to_PL.write("payload idle " )
+        PF_to_PL.close()
+        downlink=open("downlink.txt", "a", encoding="utf-8")
+        downlink.write("payload idle mode enabled " )
+        downlink.close()
+    elif telecommand.split()[1]=="collect_data": #switches payload to data collection mode
+        PF_to_PL=open("PF_to_PL.txt", "a", encoding="utf-8")
+        PF_to_PL.write("collect data " )
+        PF_to_PL.close()
+        downlink=open("downlink.txt", "a", encoding="utf-8")
+        downlink.write("data collection mode enabled " )
+        downlink.close()
+    else:
+        downlink=open("downlink.txt", "a", encoding="utf-8")
+        downlink.write("invalid command " )
+        downlink.close()
+
+previous_telecommand_line="null"
+#-------------------------------------------------
+#Telemetry Functions
+#-------------------------------------------------
+def PF_TM_generation() -> str:
+    """
+    generates platform telemetry.
+
+    Args:
+        
+
+    Returns:
+        generated platform telemetry.
+    """
+    return platform_telemetry
+def read_PL_telemetry(filename="payload_telemetry.txt", encoding="utf-8"):
+def TM_identification(telemetry: str):
+    """
+    Takes telemetry and identifies if it originates from
+    platform or payload and whether it is housekeeping or
+    event telemetry.
+
+    Args:
+        telemetry
+
+    Returns:
+        identification of the telemetry.
+    """
+def TM_sequence_ascribe(telemetry: str) -> str:
+    """
+    Takes telemetry  and adds a sequence number to it.
+
+    Args:
+        telemetry
+
+    Returns:
+        the same telemetry with a sequence number.
+    """
+    return sequence_number + telemetry
+def TM_sequence_verify(telemetry: str, previous_telemetry: str) -> str:
+    """
+    Takes telemetry checks the sequence number.
+
+    Args:
+        telemetry
+
+    Returns:
+        checks the sequence.
+    """
+    return sequence_verification
+def TM_time_tag(telemetry: str) -> str:
+    """
+    Takes telemetry and time tags it.
+
+    Args:
+        telemetry
+
+    Returns:
+        the same telemetry prefixed with a timestamp.
+    """
+    return time + telemetry
+previous_telemetry_line="null" #initial previous telemetry
+#-------------------------------------------------
+#Platform Loop
+#-------------------------------------------------
+while True:
+    #TC Processing Part of the loop
+    uplink=read_uplink() #reads all telecommands from uplink.txt
+    open("uplink.txt", "w", encoding="utf-8").close() # Clear uplink.txt contents
+    for i in range(count_lines(uplink)): #loops through all telecommand lines
+        telecommand_line=uplink.splitlines()[i] #reads one telecommand line at a time
+        if TC_reply(telecommand_line) #checks if TC is valid and replies to ground
+            sequence_verify(telecommand_line) #verifies sequence
+            time_tag(telecommand_line) #time tags TC
+            TC_identification(telecommand_line) #identifies TC as platform or payload
+            mode_switch(telecommand_line) #if mode switch TC, switches payload mode
+        downlink=open("downlink.txt", "a", encoding="utf-8") #opens downlink.txt to add new line
+        downlink.write("\n") #adds a new line after each TC processing
+        downlink.close()
+        previous_telecommand_line=telecommand_line #stores previous telecommand line for next loop
+    #TM Processing Part of the loop
+    telemetry=read_PL_telemetry()
+    PF_TM_generation()
+    TM_identification(telemetry)
+    TM_sequence_ascribe(telemetry)
+    TM_sequence_verify(telemetry, previous_telemetry)
+    TM_time_tag(telemetry)
+    previous_telemetry=telemetry
+    time.sleep(1)
+
+
