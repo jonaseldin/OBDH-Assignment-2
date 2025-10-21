@@ -1,13 +1,15 @@
 import time 
 import random 
-import os
 
 
-
+# Files with data
 InFile = "PF_to_PL.txt"  # Platform -> Payload
 OutFile = "PL_to_PF.txt"  # Payload -> Platform
 
+# Sequence starting at 0
 seq_counter = 0
+
+# Begin with the payload being turned off 
 state = "OFF"
 
 
@@ -32,12 +34,12 @@ def generate_payload_data():
 
     return temperature_C, voltage_V, signal_strength
 
-# Read incommin file and clear it efter copying data
+# Read incomming file and clear it after copying data
 def read_and_clear_cmd():
     try:
         with open(InFile, "r+", encoding = "utf-8") as InF:
             cmd = InF.read().strip()
-            # Erase everything in the file
+            # Cut everything out in the file starting from position 0
             InF.seek(0)
             InF.truncate()
             return cmd
@@ -55,12 +57,16 @@ def write_to_PF(s):
 
 # Payload States
 
+# Counter for taking images
 last_img_time = 0
 
+# Main loop
 while True:
 
+    # Calling on function to read and clear the incomming file
     command = read_and_clear_cmd()
 
+    # Checking which state the payload should be in ackordning to the TC
     if command:
         if command == "PAYLOAD IDLE":
             state = "IDLE"
@@ -68,39 +74,46 @@ while True:
             state = "OFF"
         elif command == "PAYLOAD COLLECT DATA":
             state = "COLLECTING DATA" 
+        # If the command is none of the above
         else: 
             seq = next_seq()
-            write_to_PF(f"{seq} State command is invalid {OBT()}")
+            write_to_PF(f"{seq} Command is invalid {OBT()}")
 
+    # Save current time as t
     t = OBT()
 
+    # What should happen in each state
     if state == "OFF":
-
+        # When payload is off, send confirmation that payload is turned off along with sequence count
         seq = next_seq()
         write_to_PF(f"{seq} Payload is OFF {t}")
 
+    # If payload is not turned off
     else: 
+        # Get generated HK
         temp, volt, sig = generate_payload_data()
-        seq = next_seq
+        # Send HK to PF along with sequence count
+        seq = next_seq()
         write_to_PF(f"{seq} {temp}°C {volt}V {t} {sig}%")
 
+        # If state is "collecting data", image should be taken every 5 seconds
         if state == "COLLECTING DATA":
+            # Finding current time
             now = time.time()
+            # Taking image of it has been 5 or more seconds
             if now - last_img_time >= 5:
+                # Send message simulating image taken
                 seq = next_seq()
                 write_to_PF(f"{seq} Image taken {t}")
                 last_img_time = now
 
+        # Send confirmation to PF that payload is either idle or collecting data
         if state == "IDLE":
             message = "Payload is IDLE"
         else:
             message = "Payload is COLLECTING DATA"
+        seq = next_seq()
         write_to_PF(f"{seq} {message} {t}")
 
+    # Repeat loop every second
     time.sleep(1)
-
-   
-
-
-
-
