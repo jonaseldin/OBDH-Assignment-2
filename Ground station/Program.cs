@@ -110,7 +110,7 @@ class Program
 
     static void Main()
     {
-        string uplinkFilePath = "Uplink.txt";
+        string uplinkFilePath = "uplink.txt";
         string MIBFilePath = "MIB.txt";
         string downlinkPath = "C:\\Users\\wolinn-2\\source\\repos\\test\\test\\bin\\Debug\\net8.0\\Downlink.txt";
         string EventLog = "EventLog.txt";
