@@ -162,7 +162,7 @@ def PF_time(telecommand: str) -> int:
     Returns:
         time request in seconds.
     """
-    send_time=telecommand.split()[4] #reads send_time from telecommand
+    send_time=telecommand[4] #reads send_time from telecommand
     time_in_seconds=_time_to_seconds(send_time) #converts time request to seconds
     return time_in_seconds
 def PF_time_to_string(seconds: int) -> str:
@@ -194,7 +194,7 @@ def PF_TM_generation(TMsequence):
         generated platform telemetry.
     """
     downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
-    downlink.write(str(2)+ " " +str(TMsequence) +" Housekeeping " + str(time) + "\n")
+    downlink.write(str(2)+ " " +str(TMsequence) +" Housekeeping " + PF_time_to_string(platform_time) + "\n")
     downlink.close()
 def read_PL_telemetry(filename=r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\PL_to_PF.txt", encoding="utf-8"):
     file=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\PL_to_PF.txt", "r", encoding=encoding)  
@@ -232,7 +232,7 @@ previous_telemetry_line="null" #initial previous telemetry
 TMsequence=1
 sequence=1
 request_time_array=[]
-platform_time=PF_time(open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\uplink.txt", "r", encoding="utf-8").read().splitlines()[4]) #initial PF time from first telecommand
+platform_time=PF_time(open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\uplink.txt", "r", encoding="utf-8").read().split()) #initial PF time from first telecommand
 while True:
     #TC Processing Part of the loop
     uplink=read_uplink() #reads all telecommands from uplink.txt
