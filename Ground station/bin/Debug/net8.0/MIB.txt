@@ -1,4 +1,4 @@
-target point command
-collect data command
-set idle command
-set safe mode command
+target_point pf
+collect_data pl
+set_idle pl
+set_safe pf
