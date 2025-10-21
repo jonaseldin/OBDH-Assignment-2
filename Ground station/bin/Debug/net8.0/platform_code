@@ -2,13 +2,19 @@ import os
 import time
 import re
 
-
+# start ground file first
 # This code writes in downlink.txt and PF_to_PL.txt files.
 # It reads from uplink.txt and PL_to_PF.txt files.
 
 #-------------------------------------------------
 #Telecommand functions
 #-------------------------------------------------
+def _time_to_seconds(timestr: str):
+        try:
+            h, m, s = map(int, timestr.split(":"))
+            return h * 3600 + m * 60 + s
+        except Exception:
+            return None
 def read_uplink(filename=r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\uplink.txt", encoding="utf-8"):
     file=open(filename, "r", encoding=encoding)  
     uplink=file.read()
@@ -36,7 +42,7 @@ def TC_reply(telecommand: str) -> bool:
     """
     telecommand_word_array=telecommand.split()
     if len(telecommand_word_array) == 5: #checks if TC has 5 words
-        if re.match(r"^\d{2}:\d{2}:\d{2}$",telecommand[3]) or telecommand[3]=="instant": #checks if time request format is valid
+        if re.match(r"^\d{2}:\d{2}:\d{2}$",telecommand[3]) or telecommand[3]=="inst": #checks if time request format is valid
             downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
             downlink.write("4 Tc accepted ")
             downlink.close()
@@ -51,7 +57,7 @@ def TC_reply(telecommand: str) -> bool:
         downlink.write("Tc rejected: invalid word count ")
         downlink.close()
         return False
-def time_tag(telecommand: str):
+def time_tag(telecommand: str,platform_time):
     """
     Takes telecommand from ground and time tags it.
 
@@ -62,7 +68,7 @@ def time_tag(telecommand: str):
         the same telecommand prefixed with a timestamp.
     """
     downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
-    downlink.write(time+" ")
+    downlink.write(platform_time+" ")
     downlink.close()
 def sequence_verify(telecommand: str, previous_telecommand_line):
     """
@@ -145,8 +151,35 @@ def mode_switch(telecommand: str):
         downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
         downlink.write("invalid command " )
         downlink.close()
+def PF_time(telecommand: str) -> int:
 
+    """
+    Takes telecommand with time request and converts it to seconds.
 
+    Args:
+        telecommand
+
+    Returns:
+        time request in seconds.
+    """
+    send_time=telecommand.split()[4] #reads send_time from telecommand
+    time_in_seconds=_time_to_seconds(send_time) #converts time request to seconds
+    return time_in_seconds
+def PF_time_to_string(seconds: int) -> str:
+        """
+        Opposite of PF_time: convert seconds to HH:MM:SS string.
+        Returns None for invalid input.
+        """
+        try:
+            total = int(seconds)
+        except Exception:
+            return None
+        if total < 0:
+            return None
+        h = total // 3600
+        m = (total % 3600) // 60
+        s = total % 60
+        return f"{h:02d}:{m:02d}:{s:02d}"
 #-------------------------------------------------
 #Telemetry Functions
 #-------------------------------------------------
@@ -161,7 +194,7 @@ def PF_TM_generation(TMsequence):
         generated platform telemetry.
     """
     downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
-    downlink.write(str(TMsequence) +" Housekeeping " + str(time) + "\n")
+    downlink.write(str(2)+ " " +str(TMsequence) +" Housekeeping " + str(time) + "\n")
     downlink.close()
 def read_PL_telemetry(filename=r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\PL_to_PF.txt", encoding="utf-8"):
     file=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\PL_to_PF.txt", "r", encoding=encoding)  
@@ -198,6 +231,8 @@ previous_telecommand_line="null" #initial previous telecommand
 previous_telemetry_line="null" #initial previous telemetry
 TMsequence=1
 sequence=1
+request_time_array=[]
+platform_time=PF_time(open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\uplink.txt", "r", encoding="utf-8").read().splitlines()[4]) #initial PF time from first telecommand
 while True:
     #TC Processing Part of the loop
     uplink=read_uplink() #reads all telecommands from uplink.txt
@@ -205,14 +240,29 @@ while True:
     for i in range(count_lines(uplink)): #loops through all telecommand lines
         telecommand_line=uplink.splitlines()[i] #reads one telecommand line at a time
         if TC_reply(telecommand_line): #checks if TC is valid and replies to ground
-            sequence_verify(telecommand_line,previous_telecommand_line) #verifies sequence
-            time_tag(telecommand_line) #time tags TC
-            TC_identification(telecommand_line) #identifies TC as platform or payload
-            mode_switch(telecommand_line) #if mode switch TC, switches payload mode
-        downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8") #opens downlink.txt to add new line
-        downlink.write("\n") #adds a new line after each TC processing
-        downlink.close()
-        previous_telecommand_line=telecommand_line #stores previous telecommand line for next loop
+            if telecommand_line.split()[4] != "inst":
+                sequence_verify(telecommand_line,previous_telecommand_line) #verifies sequence
+                time_tag(telecommand_line,PF_time_to_string(PF_time)) #time tags TC
+                TC_identification(telecommand_line) #identifies TC as platform or payload
+                mode_switch(telecommand_line) #if mode switch TC, switches payload mode
+            else:
+                request_time_array.append(telecommand_line+"\n") #stores request_time telecommands
+                sequence_verify(telecommand_line,previous_telecommand_line) #verifies sequence
+            downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8") #opens downlink.txt to add new line
+            downlink.write("\n") #adds a new line after each TC processing
+            downlink.close()
+            previous_telecommand_line=telecommand_line #stores previous telecommand line for next loop
+            for j in range(count_lines(request_time_array)): #loops through all the time_requested telecommand lines
+                tc = request_time_array[j].rstrip("\n")  # j-th telecommand line
+                if PF_time(tc) == platform_time:
+                    time_tag(tc,PF_time_to_string(PF_time))  # time tags TC
+                    TC_identification(tc)  # identifies TC as platform or payload
+                    mode_switch(tc)  # if mode switch TC, switches payload mode
+                    request_time_array.pop(j)  # removes processed telecommand from array
+                    downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8") #opens downlink.txt to add new line
+                    downlink.write("\n") #adds a new line after each TC processing
+                    downlink.close()
+
     #TM Processing Part of the loop
     PF_TM_generation(TMsequence) #generates platform telemetry
     TMsequence=TMsequence+1
@@ -223,6 +273,9 @@ while True:
         sequence=sequence+1
         previous_telemetry_line=telemetry_line
     
+
+
+    platform_time=platform_time+1 #increments platform time by 1 second
     time.sleep(1)
 
 
