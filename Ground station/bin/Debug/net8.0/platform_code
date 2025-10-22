@@ -59,17 +59,17 @@ def TC_reply(telecommand: str) -> bool:
     if len(telecommand_word_array) == 5: #checks if TC has 5 words
         if re.match(r"^\d{2}:\d{2}:\d{2}$",telecommand_word_array[3]) or telecommand_word_array[3]=="inst": #checks if time request format is valid
             downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
-            downlink.write("4 Tc accepted ")
+            downlink.write("4 sequence number: "+telecommand_word_array[0]+" TC accepted \n")
             downlink.close()
             return True
         else:
             downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
-            downlink.write("4 Tc rejected: invalid time request format\n")
+            downlink.write("4 sequence number: "+telecommand_word_array[0]+ " TC rejected: invalid time request format\n")
             downlink.close()
             return False
     else:
         downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
-        downlink.write("4 Tc rejected: invalid word count\n")
+        downlink.write("4 sequence number: "+telecommand_word_array[0]+ " TC rejected: invalid format\n")
         downlink.close()
         return False
 def time_tag(platform_time):
@@ -83,7 +83,7 @@ def time_tag(platform_time):
         the same telecommand prefixed with a timestamp.
     """
     downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
-    downlink.write((platform_time)+" ")
+    downlink.write(" TC received at OBT "+platform_time+" ")
     downlink.close()
 def sequence_verify(telecommand: str, previous_telecommand_line):
     """
@@ -97,11 +97,11 @@ def sequence_verify(telecommand: str, previous_telecommand_line):
     """
     if int(telecommand.split()[0]) == int(previous_telecommand_line.split()[0]) + 1 or int(telecommand.split()[0]) == 1:
         downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
-        downlink.write(" Sequence verified\n")
+        downlink.write("3 Sequence verified ")
         downlink.close()
     else:
         downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
-        downlink.write("sequence error " )
+        downlink.write("3 sequence error " )
         downlink.close()
 def TC_identification(telecommand: str) -> str:
     """
@@ -115,15 +115,15 @@ def TC_identification(telecommand: str) -> str:
     """
     if telecommand.split()[2]=="pf": #identifies platform telecommand
         downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
-        downlink.write("routed for platform " )
+        downlink.write("sequence number: "+telecommand[0]+" routed for platform " )
         downlink.close()
     elif telecommand.split()[2]=="pl": #identifies payload telecommand
         downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
-        downlink.write("routed for payload " )
+        downlink.write("sequence number: "+telecommand[0]+" routed for payload " )
         downlink.close()
     else:
         downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
-        downlink.write("routed for unknown destination " )
+        downlink.write("sequence number: "+telecommand[0]+" routed for unknown destination " )
         downlink.close()
 def mode_switch(telecommand: str):
     """
@@ -136,28 +136,30 @@ def mode_switch(telecommand: str):
     Returns:
         switches payload mode to safe mode or target pointing mode.
     """
-    if telecommand.split()[1]=="set_safe": #switches payload to safe mode
+    telecommand_word_array=telecommand.split()
+    print("The command was "+telecommand_word_array[1])
+    if telecommand_word_array[1]=="set_safe": #switches payload to safe mode
         PF_to_PL=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\PF_to_PL.txt", "a", encoding="utf-8")
         PF_to_PL.write("payload off\n" )
         PF_to_PL.close()
         downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
         downlink.write("4 sun pointing mode enabled " )
         downlink.close()
-    elif telecommand.split()[1]=="target_point": #switches payload to target pointing mode
+    elif telecommand_word_array[1]=="target_point": #switches payload to target pointing mode
         PF_to_PL=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\PF_to_PL.txt", "a", encoding="utf-8")
         PF_to_PL.write("payload idle\n" )
         PF_to_PL.close()
         downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
         downlink.write("4 target pointing mode enabled " )
         downlink.close()
-    elif telecommand.split[1]=="set_payload_idle": #switches payload to idle mode
+    elif telecommand_word_array[1]=="set_idle": #switches payload to idle mode
         PF_to_PL=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\PF_to_PL.txt", "a", encoding="utf-8")
         PF_to_PL.write("payload idle\n" )
         PF_to_PL.close()
         downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
         downlink.write("4 payload idle mode enabled " )
         downlink.close()
-    elif telecommand.split()[1]=="collect_data": #switches payload to data collection mode
+    elif telecommand_word_array[1]=="collect_data": #switches payload to data collection mode
         PF_to_PL=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\PF_to_PL.txt", "a", encoding="utf-8")
         PF_to_PL.write("collect data\n" )
         PF_to_PL.close()
@@ -166,7 +168,7 @@ def mode_switch(telecommand: str):
         downlink.close()
     else:
         PF_to_PL=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\PF_to_PL.txt", "a", encoding="utf-8")
-        PF_to_PL.write("collect data\n" )
+        PF_to_PL.write("invalid command\n" )
         PF_to_PL.close()
         downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8")
         downlink.write("4 invalid command " )
@@ -186,8 +188,8 @@ def PF_time(telecommand: str) -> int:
     time_in_seconds=_time_to_seconds(send_time) #converts time request to seconds
     return time_in_seconds
 def PF_request_time(telecommand:str):
-    request_time=telecommand[3]
-    time_in_seconds=_time_to_seconds(request_time)
+    time_in_seconds=_time_to_seconds(telecommand)
+    return time_in_seconds
 
 #-------------------------------------------------
 #Telemetry Functions
@@ -245,36 +247,48 @@ previous_telecommand_line="0" #initial previous telecommand
 previous_telemetry_line="0" #initial previous telemetry
 TMsequence=1
 sequence=1
-request_time_array=[]
+#request_time_array=[]
+request_time_line_vector=[]
+#request_counter=0
 platform_time=PF_time(open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\uplink.txt", "r", encoding="utf-8").read().split()) #initial PF time from first telecommand
 file=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\PL_to_PF.txt", "w", encoding="utf-8")  
 file.close()
 while True:
     #TC Processing Part of the loop
+    print("The platform time is "+PF_time_to_string(platform_time))
+    #print("the request time array is: ",request_time_array)
+    print("the request_time_line_vector is ",request_time_line_vector)
     uplink=read_uplink() #reads all telecommands from uplink.txt
     open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\uplink.txt", "w", encoding="utf-8").close() # Clear uplink.txt contents
     for i in range(count_lines(uplink)): #loops through all telecommand lines
         telecommand_line=uplink.splitlines()[i] #reads one telecommand line at a time
         if TC_reply(telecommand_line): #checks if TC is valid and replies to ground
-            if telecommand_line.split()[3] != "inst":
+            if telecommand_line.split()[3] == "inst":
                 sequence_verify(telecommand_line,previous_telecommand_line) #verifies sequence
                 time_tag(PF_time_to_string(platform_time)) #time tags TC
                 TC_identification(telecommand_line) #identifies TC as platform or payload
                 mode_switch(telecommand_line) #if mode switch TC, switches payload mode
             else:
-                request_time_array.append(telecommand_line+"\n") #stores request_time telecommands
+                request_time_line_vector.append(telecommand_line)
+                #request_counter+=1
+                #request_time_array.append(telecommand_line+"\n") #stores request_time telecommands
                 sequence_verify(telecommand_line,previous_telecommand_line) #verifies sequence
             downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8") #opens downlink.txt to add new line
             downlink.write("\n") #adds a new line after each TC processing
             downlink.close()
+            
             previous_telecommand_line=telecommand_line #stores previous telecommand line for next loop
-            for j in range(len(request_time_array)): #loops through all the time_requested telecommand lines
-                tc = request_time_array[j].rstrip("\n")  # j-th telecommand line
-                if PF_request_time(tc) == platform_time:
-                    time_tag(tc,PF_time_to_string(PF_time))  # time tags TC
+    for j in range(len(request_time_line_vector)): #loops through all the time_requested telecommand lines
+            #tc = request_time_array[j].rstrip("\n")  # j-th telecommand line
+            tc=request_time_line_vector[j]
+            print("the time take from tc is ",tc.split()[3])
+            print("the PF request time is ",PF_time_to_string(PF_request_time(tc.split()[3])))
+            if PF_request_time(tc.split()[3]) == platform_time:
+                    time_tag(PF_time_to_string(platform_time))  # time tags TC
                     TC_identification(tc)  # identifies TC as platform or payload
                     mode_switch(tc)  # if mode switch TC, switches payload mode
-                    request_time_array.pop(j)  # removes processed telecommand from array
+
+                    #request_time_array.pop(j)  # removes processed telecommand from array
                     downlink=open(r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\downlink.txt", "a", encoding="utf-8") #opens downlink.txt to add new line
                     downlink.write("\n") #adds a new line after each TC processing
                     downlink.close()
@@ -283,7 +297,6 @@ while True:
     PF_TM_generation(TMsequence) #generates platform telemetry
     TMsequence=TMsequence+1
     telemetry=read_PL_telemetry() #reads payload telemetry
-    print(count_lines(telemetry))
     for i in range(count_lines(telemetry)): #loops through all telemetry lines
         telemetry_line=telemetry.splitlines()[i] #reads one telemetry line at a time
         TM_sequence_verify(telemetry_line,previous_telemetry_line,sequence) #verifies sequence

@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -169,7 +170,11 @@ class Program
 
 
         int sequence = 0;
+        string seqString;
 
+        sequence++;
+        seqString = sequence.ToString();
+        Idle(uplinkFilePath, MIBFilePath, commandLog, seqString, "inst");
 
 
         //this is a parallell task that cyclycally reads the downlink file to look for incoming telemetry and writes it all down to the log file with an appended receival timestamp
@@ -211,7 +216,7 @@ class Program
                         log3.Add(line + " " + groundTime);
                     else if (line[0] == '4' && !confirmPrinted)
                     {
-                        
+                        Console.WriteLine(line);
                         log3.Add(line + " " + groundTime);
                         confirmPrinted = true; 
 
@@ -250,7 +255,7 @@ class Program
             Console.Write("Input command: ");
             string cmnd = Console.ReadLine();
             string[] command = cmnd.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            string seqString;
+            
 
         
 

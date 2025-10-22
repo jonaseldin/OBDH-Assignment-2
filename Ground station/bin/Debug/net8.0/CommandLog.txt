@@ -1,10 +1,4 @@
-1 target_point pf inst 13:23:30
-2 target_point pf 23:45:21 13:24:17
-3 target_point pf 12:25:00 13:24:47
-4 target_point pf 13:25:50 13:25:35
-5 target_point pf 13:27:00 13:26:37
-6 target_point pf 13:27:00 13:26:40
-7 target_point pf 13:27:00 13:26:41
-8 target_point pf 13:27:00 13:26:42
-9 target_point pf 13:27:00 13:26:43
-10 target_point pf 13:27:00 13:26:44
+1 set_idle pl inst 20:25:46
+2 target_point pf inst 20:26:17
+3 incorrect format pf inst 20:27:22
+4 incorrect format pf 20:27:55 20:27:43

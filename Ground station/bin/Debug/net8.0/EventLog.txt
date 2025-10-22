@@ -1,10 +1,6 @@
-4 Tc accepted  Sequence verified 13:23:55
-4 Tc accepted  Sequence verified 13:24:18
-4 Tc accepted  Sequence verified 13:24:48
-4 Tc accepted  Sequence verified 13:25:36
-4 Tc accepted  Sequence verified 13:26:39
-4 Tc accepted  Sequence verified 13:26:41
-4 Tc accepted  Sequence verified 13:26:42
-4 Tc accepted  Sequence verified 13:26:43
-4 Tc accepted  Sequence verified 13:26:44
-4 Tc accepted  Sequence verified 13:26:45
+4 sequence number: 1 TC accepted  20:25:51
+3 Sequence verified  TC received at OBT 20:25:46 sequence number: 1 routed for payload 4 payload idle mode enabled  20:25:51
+4 sequence number: 2 TC accepted  20:26:18
+3 Sequence verified  TC received at OBT 20:26:12 sequence number: 2 routed for platform 4 target pointing mode enabled  20:26:18
+4 sequence number: 3 TC rejected: invalid format 20:27:22
+4 sequence number: 4 TC rejected: invalid format 20:27:44
