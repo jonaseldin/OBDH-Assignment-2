@@ -1,0 +1,14 @@
+CommandLog.txt set_idle pl 2 10:42:21
+CommandLog.txt set_idle pl 2 10:47:14
+CommandLog.txt set_idle pl 3 10:48:08
+CommandLog.txt set_safe pf 2 11:03:49
+CommandLog.txt incorrect format pf 1 11:06:46
+CommandLog.txt incorrect format pf 1 11:07:33
+CommandLog.txt incorrect format pf 2 11:09:23
+CommandLog.txt incorrect format pf 1 11:11:38
+CommandLog.txt incorrect format pf 1 11:12:41
+CommandLog.txt set_idle pl 2 11:25:02
+CommandLog.txt set_idle pl 2 11:30:32
+CommandLog.txt set_idle pl 2 11:31:52
+CommandLog.txt set_safe pf 3 11:33:14
+CommandLog.txt collect_data pl 2 11:36:02

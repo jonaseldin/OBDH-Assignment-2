@@ -20,7 +20,7 @@ class Program
         Console.WriteLine("collect_data: sattelite will start collecting data, telemetry will be displayed, requires target point executed");
         Console.WriteLine("idle: sets the payload to its idle mode");
         Console.WriteLine("safe_mode: sets the sattelite into safe mode");
-        Console.WriteLine("display_event_log: displays the contents of the log file\n");
+        Console.WriteLine("display_event_log: displays the contents of the log file");
         Console.WriteLine("display_hk_pl_log");
         Console.WriteLine("display_hk_pf_log");
         Console.WriteLine("display_command_log");
@@ -41,7 +41,7 @@ class Program
     {
         string groundTime = DateTime.Now.ToString("HH:mm:ss");
         string[] lines = File.ReadAllLines(MIBFilePath);
-        using FileStream fs = new FileStream(signalFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
+        using FileStream fs = new FileStream(signalFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
         using StreamWriter sw = new StreamWriter(fs);
 
         string logLine = string.Join(" ", sequence, lines[0], sendTime, groundTime);
@@ -54,11 +54,11 @@ class Program
 
     }
 
-    static void CollectData(string signalFilePath, string MIBFilePath, string sequence, string sendTime, string commandLog)
+    static void CollectData(string signalFilePath, string MIBFilePath, string commandLog, string sequence, string sendTime)
     {
         string groundTime = DateTime.Now.ToString("HH:mm:ss");
         string[] lines = File.ReadAllLines(MIBFilePath);
-        using FileStream fs = new FileStream(signalFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
+        using FileStream fs = new FileStream(signalFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
         using StreamWriter sw = new StreamWriter(fs);
 
         string logLine = string.Join(" ", sequence, lines[1], sendTime, groundTime);
@@ -67,11 +67,11 @@ class Program
         File.AppendAllText(commandLog, logLine + "\n");
     }
 
-    static void Idle(string signalFilePath, string MIBFilePath, string sequence, string sendTime, string commandLog)
+    static void Idle(string signalFilePath, string MIBFilePath, string commandLog, string sequence, string sendTime)
     {
         string groundTime = DateTime.Now.ToString("HH:mm:ss");
         string[] lines = File.ReadAllLines(MIBFilePath);
-        using FileStream fs = new FileStream(signalFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
+        using FileStream fs = new FileStream(signalFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
         using StreamWriter sw = new StreamWriter(fs);
 
         string logLine = string.Join(" ", sequence, lines[2], sendTime, groundTime);
@@ -80,15 +80,28 @@ class Program
         File.AppendAllText(commandLog, logLine + "\n");
     }
 
-    static void SafeMode(string signalFilePath, string MIBFilePath, string sequence, string sendTime, string commandLog)
+    static void SafeMode(string signalFilePath, string MIBFilePath, string commandLog, string sequence, string sendTime)
     {
         string groundTime = DateTime.Now.ToString("HH:mm:ss");
         string[] lines = File.ReadAllLines(MIBFilePath);
-        using FileStream fs = new FileStream(signalFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
+        using FileStream fs = new FileStream(signalFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
         using StreamWriter sw = new StreamWriter(fs);
 
         string logLine = string.Join(" ", sequence, lines[3], sendTime, groundTime);
 
+        sw.WriteLine(logLine);
+        File.AppendAllText(commandLog, logLine + "\n");
+    }
+
+    static void incorrectFormatTest(string signalFilePath, string MIBFilePath, string commandLog, string sequence, string sendTime)
+    {
+        string groundTime = DateTime.Now.ToString("HH:mm:ss");
+        string[] lines = File.ReadAllLines(MIBFilePath);
+        using FileStream fs = new FileStream(signalFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+        using StreamWriter sw = new StreamWriter(fs);
+
+        string logLine = string.Join(" ", sequence, lines[4], sendTime, groundTime);
+        
         sw.WriteLine(logLine);
         File.AppendAllText(commandLog, logLine + "\n");
     }
@@ -198,7 +211,7 @@ class Program
                         log3.Add(line + " " + groundTime);
                     else if (line[0] == '4' && !confirmPrinted)
                     {
-                        Console.WriteLine("Line starting with 4 detected: " + line);
+                        
                         log3.Add(line + " " + groundTime);
                         confirmPrinted = true; 
 
@@ -221,7 +234,7 @@ class Program
                         await Task.Delay(50);
                     }
                 }
-
+               
 
                 await Task.Delay(1000);
             }
@@ -244,11 +257,7 @@ class Program
 
             Thread.Sleep(1000);
 
-            if (command.Length < 2)
-            {
-                Console.WriteLine("Error: You must provide a time or type 'inst' for instant execution.");
-                continue;
-            }
+
 
 
             switch (command[0])
@@ -290,6 +299,11 @@ class Program
                     break;
                 case "display_command_log":
                     DisplayCommandLog(commandLog);
+                    break;
+                case "test_function":
+                    sequence++;
+                    seqString = sequence.ToString();
+                    incorrectFormatTest(uplinkFilePath, MIBFilePath, commandLog, seqString, command[1]);
                     break;
                 default:
                     Console.WriteLine("Error: unknown command, type 'list' for a list of commands");

@@ -3,8 +3,8 @@ import random
 
 
 # Files with data
-InFile = "PF_to_PL.txt"  # Platform -> Payload
-OutFile = "PL_to_PF.txt"  # Payload -> Platform
+InFile = r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\PF_to_PL.txt"  # Platform -> Payload
+OutFile = r"C:\Users\wolinn-2\source\repos\Ground station\Ground station\bin\Debug\net8.0\PL_to_PF.txt"  # Payload -> Platform
 
 # Sequence starting at 0
 seq_counter = 0
@@ -39,6 +39,7 @@ def read_and_clear_cmd():
     try:
         with open(InFile, "r+", encoding = "utf-8") as InF:
             cmd = InF.read().strip()
+           
             # Cut everything out in the file starting from position 0
             InF.seek(0)
             InF.truncate()
@@ -68,11 +69,11 @@ while True:
 
     # Checking which state the payload should be in ackordning to the TC
     if command:
-        if command == "PAYLOAD IDLE":
+        if command == "payload idle":
             state = "IDLE"
-        elif command == "PAYLOAD OFF":
+        elif command == "payload off":
             state = "OFF"
-        elif command == "PAYLOAD COLLECT DATA":
+        elif command == "collect data":
             state = "COLLECTING DATA" 
         # If the command is none of the above
         else: 
