@@ -1,6 +1,14 @@
-4 sequence number: 1 TC accepted  20:25:51
-3 Sequence verified  TC received at OBT 20:25:46 sequence number: 1 routed for payload 4 payload idle mode enabled  20:25:51
-4 sequence number: 2 TC accepted  20:26:18
-3 Sequence verified  TC received at OBT 20:26:12 sequence number: 2 routed for platform 4 target pointing mode enabled  20:26:18
-4 sequence number: 3 TC rejected: invalid format 20:27:22
-4 sequence number: 4 TC rejected: invalid format 20:27:44
+4 sequence number: 1 TC accepted  21:07:26
+3 Sequence verified  TC received at OBT 21:07:19 sequence number: 1 routed for payload 4 payload idle mode enabled  21:07:26
+4 sequence number: 2 TC rejected: invalid format 21:08:24
+4 sequence number: 3 TC accepted  21:09:56
+3 sequence error  21:09:56
+4 sequence number: 4 TC accepted  21:10:48
+3 Sequence verified  21:10:48
+4 sequence number: 5 TC accepted  21:11:57
+3 Sequence verified  TC received at OBT 21:11:44 sequence number: 5 routed for payload 4 data collection mode enabled  21:11:57
+4 sequence number: 6 TC rejected: invalid time request format 21:13:03
+4 sequence number: 7 TC accepted  21:13:13
+3 sequence error  TC received at OBT 21:12:58 sequence number: 7 routed for platform 4 target pointing mode enabled  21:13:13
+4 sequence number: 8 TC accepted  21:13:59
+3 Sequence verified  TC received at OBT 21:13:43 sequence number: 8 routed for platform 4 target pointing mode enabled  21:13:59

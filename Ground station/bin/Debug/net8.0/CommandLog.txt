@@ -1,4 +1,8 @@
-1 set_idle pl inst 20:25:46
-2 target_point pf inst 20:26:17
-3 incorrect format pf inst 20:27:22
-4 incorrect format pf 20:27:55 20:27:43
+1 set_idle pl inst 21:07:19
+2 incorrect format pf inst 21:08:23
+3 set_safe pf 21:09:55 21:09:56
+4 set_idle pl 21:11:00 21:10:47
+5 collect_data pl inst 21:11:56
+6 target_point pf mode 21:13:03
+7 target_point pf inst 21:13:12
+8 target_point pf inst 21:13:59
